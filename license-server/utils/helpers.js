@@ -8,7 +8,7 @@ function calculateExpiry(plan) {
   const now = new Date();
   if (plan === 'lifetime') now.setFullYear(now.getFullYear() + 50);
   else if (plan === 'yearly') now.setFullYear(now.getFullYear() + 1);
-  else now.setMonth(now.getMonth() + 1); // monthly default
+  else now.setMonth(now.getMonth() + 1);
   return now.toISOString();
 }
 
