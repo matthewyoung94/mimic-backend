@@ -1,42 +1,30 @@
+require("dotenv").config();
 const express = require("express");
+const cors = require("cors");
 const app = express();
 
-const licenseRoutes = require("./routes/licenses");
-const stripeWebhook = require("./stripe-webhook");
-require('dotenv').config();
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const FRONTEND_URL = process.env.FRONTEND_URL;
+
+app.use(
+  cors({
+    origin: FRONTEND_URL,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 app.use(express.json());
 
-app.post("/create-checkout-session", async (req, res) => {
-  const { priceId, email, plan } = req.body;
+// Routes
+const licenseRoutes = require("./routes/licenses");
+const stripeRoutes = require("./routes/payments");
 
-  try {
-    const price = await stripe.prices.retrieve(priceId);
-    const mode = price.recurring ? "subscription" : "payment";
-    const session = await stripe.checkout.sessions.create({
-      mode,
-      line_items: [{ price: priceId, quantity: 1 }],
-      customer_email: email,
-      metadata: { plan },
-      success_url:
-        "http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}",
-      cancel_url: "http://localhost:3000/cancel",
-    });
-
-    res.json({ url: session.url });
-  } catch (error) {
-    console.error("Error creating checkout session:", error);
-    res.status(500).json({ error: "Something went wrong" });
-  }
-});
-
-app.use("/", licenseRoutes);
-
-app.use("/stripe", stripeWebhook); // Endpoint: POST /stripe/webhook
+app.use("/licenses", licenseRoutes);
+app.use("/payments", stripeRoutes);
 
 app.get("/", (req, res) => {
-  res.send("🎉 License API is running! Use Postman or /generate-license etc.");
+  res.send("🎉 License API is running!");
 });
 
 app.listen(3000, () => {
