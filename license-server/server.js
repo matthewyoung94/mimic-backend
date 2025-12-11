@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+
 const app = express();
 
 const FRONTEND_URL = process.env.FRONTEND_URL;
@@ -16,12 +17,11 @@ app.use(
 
 app.use(express.json());
 
-// Routes
 const licenseRoutes = require("./routes/licenses");
-const stripeRoutes = require("./routes/payments");
+const stripeEmbeddedRoutes = require("./routes/stripeEmbedded");
 
 app.use("/licenses", licenseRoutes);
-app.use("/payments", stripeRoutes);
+app.use("/stripe", stripeEmbeddedRoutes);
 
 app.get("/", (req, res) => {
   res.send("🎉 License API is running!");
