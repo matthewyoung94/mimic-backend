@@ -24,7 +24,7 @@ async function createEmbeddedCheckoutSession(priceId, plan) {
 }
 
 function handleCheckoutSessionCompleted(session) {
-  const email = session.customer_email;
+  const email = session.customer_details?.email;
   const plan = session.metadata?.plan || "monthly";
   const stripeCustomerId = session.customer;
 

@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const { webhook } = require("./controllers/stripeEmbeddedController");
 
 const app = express();
 
@@ -13,6 +14,12 @@ app.use(
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
+);
+
+app.post(
+  "/stripe/webhook",
+  express.raw({ type: "application/json" }),
+  webhook
 );
 
 app.use(express.json());
