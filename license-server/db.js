@@ -5,7 +5,8 @@ const db = new Database('licenses.db');
 db.prepare(`
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    email TEXT UNIQUE
+    email TEXT UNIQUE,
+    stripe_customer_id TEXT UNIQUE
   )
 `).run();
 
